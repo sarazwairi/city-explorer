@@ -107,3 +107,5 @@ Start time: 2:00pm
 Finish time: 4:00pm
 
 Actual time needed to complete:2h
+
+![Alt Text](lab6.png)
