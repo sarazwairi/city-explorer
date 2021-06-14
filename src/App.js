@@ -1,50 +1,84 @@
 import React from 'react';
 import axios from 'axios';
+import { Card, Form, Button } from 'react-bootstrap/';
+import Weather from './components/Weather'
+
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      locationData: '',
+      city: '',
+      cityInfo:{},
       errorMsg: '',
+      weatherData:'',
       displayErrorMsg: false,
       displayMap: false
     }
   }
+  getCity=(event)=>{
+    this.setState({
+      city : event.target.value,
+    });
+  }
   getLocation = async (event) => {
     event.preventDefault();
-    let searchQuery1 = event.target.searchQuery.value;
-    let loactionURL = `https://eu1.locationiq.com/v1/search.php?key=pk.f5b36af51f5dd4d50454aa00a95c7ec2&q=${searchQuery1}&format=json`;
-    try {
-      let locationResult = await axios.get(loactionURL);
+    try{
+      const axiosResponse = await axios.get(`https://us1.locationiq.com/v1/search.php?key=pk.d36871f015649f915282f374cff76628&city=${this.state.city}&format=json`)
+
+      const apiRes = await axios.get(`${process.env.REACT_APP_URL}/weather-data`)
+
       this.setState({
-        locationData: locationResult.data[0],
-        displayMap: true
-      })
+        cityInfo: axiosResponse.data[0],
+        weatherData:apiRes.data.data,
+        displayMap:true,
+        displayErrorMsg: false
+      });
     }
-    catch {
+    catch(error) {
       this.setState({
         errorMsg: 'Unable to geocode',
         displayErrorMsg: true
-      })
+
+      });
     }
   }
     render(){
       return (
-        <div>
-          <h1>city explorer</h1>
-          <form onSubmit={this.getLocation}>
-            <input type='tesxt' placeholder='location name' name='searchQuery' />
-            <input type='submit' value='Explore!' />
-          </form>
-          <p>{this.state.locationData.display_name}</p>
-          <p>{this.state.locationData.lon}</p>
-          <p>{this.state.locationData.lat}</p>
-          {this.state.displayMap && <img src={`https://maps.locationiq.com/v3/staticmap?key=pk.43fed3791d35ddb76aa14f749c6d3080&center=${this.state.locationData.lat},${this.state.locationData.lon}`} alt='map' />}
-          <br/>
-          {this.state.displayErrorMsg && this.state.errorMsg}
-        </div>
-      )
+        <>
+          <h1>City Explorer</h1>
+          <Form onSubmit={this.getLocation}>
+            <Form.Group controlId="formBasicEmail">
+              <Form.Label>Locations </Form.Label>
+              <Form.Control placeholder="Enter location" onChange={this.updateFindQuery} />
+
+            </Form.Group>
+            <Button variant="primary" type="submit">
+              Explor!
+            </Button>
+          </Form>
+
+          {this.state.displayMap &&
+            <Card style={{ width: '18rem' }}>
+              <Card.Img variant="top" src={`https://maps.locationiq.com/v3/staticmap?key=pk.318d7e351679b370b49a56a43771dcfc&center=${this.state.cityInfo.lat},${this.state.cityInfo.lon}`} />
+              <Card.Body>
+                <Card.Title>Locations</Card.Title>
+                <Card.Text>
+                  {this.state.cityInfo.display_name}
+                </Card.Text>
+                <Card.Text>Latitude:{this.state.cityInfo.lat}</Card.Text>
+                <Card.Text>Longtutde:{this.state.cityInfo.lon}</Card.Text>
+
+              </Card.Body>
+            </Card>
+          }
+          {this.state.displayWeather &&
+            <Weather weatherData={this.state.weatherData} />
+          }
+
+
+        </>
+      );
     }
   }
-  export default App;
+    export default App;
