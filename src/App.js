@@ -1,4 +1,5 @@
 import React from 'react';
+
 import Informationform from './components/formofinfo';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Cardofinfo from './components/cardofinfo';
@@ -10,6 +11,7 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+
       data2: '',
       display: false,
       show: false,
@@ -58,5 +60,3 @@ class App extends React.Component {
   }
 }
 export default App;
-
-
