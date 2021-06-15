@@ -1,50 +1,62 @@
 import React from 'react';
-import axios from 'axios';
+import Informationform from './components/formofinfo';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Cardofinfo from './components/cardofinfo';
+import WeatherCard from './components/weather';
+import Movie from './components/movie';
+
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      locationData: '',
-      errorMsg: '',
-      displayErrorMsg: false,
-      displayMap: false
+      data2: '',
+      display: false,
+      show: false,
+      weatherArr: [],
+      rend: false,
+      newmoive: [],
+
     }
   }
-  getLocation = async (event) => {
-    event.preventDefault();
-    let searchQuery1 = event.target.searchQuery.value;
-    let loactionURL = `https://eu1.locationiq.com/v1/search.php?key=pk.f5b36af51f5dd4d50454aa00a95c7ec2&q=${searchQuery1}&format=json`;
-    try {
-      let locationResult = await axios.get(loactionURL);
-      this.setState({
-        locationData: locationResult.data[0],
-        displayMap: true
-      })
-    }
-    catch {
-      this.setState({
-        errorMsg: 'Unable to geocode',
-        displayErrorMsg: true
-      })
-    }
+  setmovie = (movie) => {
+    this.setState({
+      newmoive: movie,
+    })
+    console.log('adfsa',this.state.newmoive);
   }
-    render(){
-      return (
-        <div>
-          <h1>city explorer</h1>
-          <form onSubmit={this.getLocation}>
-            <input type='tesxt' placeholder='location name' name='searchQuery' />
-            <input type='submit' value='Explore!' />
-          </form>
-          <p>{this.state.locationData.display_name}</p>
-          <p>{this.state.locationData.lon}</p>
-          <p>{this.state.locationData.lat}</p>
-          {this.state.displayMap && <img src={`https://maps.locationiq.com/v3/staticmap?key=pk.43fed3791d35ddb76aa14f749c6d3080&center=${this.state.locationData.lat},${this.state.locationData.lon}`} alt='map' />}
-          <br/>
-          {this.state.displayErrorMsg && this.state.errorMsg}
-        </div>
-      )
-    }
+
+
+
+  setData = (data1, showing) => {
+    this.setState({
+      data2: data1,
+      display: showing,
+      show: true,
+    })
   }
-  export default App;
+
+  setWeatherArr = (weatherData, showing) => {
+    this.setState({
+      weatherArr: weatherData,
+      rend: showing,
+    })
+  }
+  render() {
+    return (
+      <div>
+        <Informationform setData={this.setData} setWeather={this.setWeatherArr} setmovie={this.setmovie} />
+        {this.state.show &&
+          <Cardofinfo data2={this.state.data2} display={this.state.display} />
+        }
+        {this.state.show === true &&
+          <WeatherCard display={this.state.rend} weatherData={this.state.weatherArr} />}
+        {this.state.show === true &&
+          <Movie display={this.state.rend} setmovie={this.state.newmoive} />}
+      </div>
+    )
+  }
+}
+export default App;
+
+
