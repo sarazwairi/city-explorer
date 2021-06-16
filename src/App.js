@@ -1,62 +1,141 @@
+
 import React from 'react';
-
-import Informationform from './components/formofinfo';
+import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Cardofinfo from './components/cardofinfo';
-import WeatherCard from './components/weather';
-import Movie from './components/movie';
+import Weather from './components/weather';
+import Movies from './components/movie';
+import Form from 'react-bootstrap/Form';
+import Card from 'react-bootstrap/Card';
+import Button from 'react-bootstrap/Button';
+import ListGroup from 'react-bootstrap/ListGroup';
 
 
-class App extends React.Component {
+
+
+export class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-
-      data2: '',
-      display: false,
-      show: false,
+      searchQuery: '',
+      citydata: '',
+      err: '',
+      lat: '',
+      lon: '',
       weatherArr: [],
-      rend: false,
-      newmoive: [],
-
+      movieArr: [],
+      mapshow: false,
+      weathershow: false,
+      mpvieShow: false,
+      errmsg: false,
     }
   }
-  setmovie = (movie) => {
-    this.setState({
-      newmoive: movie,
-    })
-    console.log('adfsa',this.state.newmoive);
+
+  city = async (e) => {
+    // e.preventDefault();
+    let server = process.env.REACT_APP_SERVER;
+    let url = `https://us1.locationiq.com/v1/search.php?key=pk.f5b36af51f5dd4d50454aa00a95c7ec2&q=${e}&format=json`;
+
+    try {
+      let results = await axios.get(url);
+      this.setState({
+        citydata: results.data[0],
+        mapshow: true,
+        errmsg: false,
+        lat: results.data[0].lat,
+        lon: results.data[0].lon,
+      })
+    }
+    catch (error) {
+      this.setState({
+        mapshow: false,
+        errmsg: true,
+        err: error,
+
+      })
+    }
+
+
+    try {
+      let weatherdata = await axios.get(`${server}/weather?city=${e}`);
+      this.setState({
+        weatherArr: weatherdata.data,
+        weathershow: true,
+      })
+      console.log(weatherdata);
+    } catch (error) {
+      this.setState({
+        weatherArr: error.response,
+        weathershow: false,
+      })
+    }
+
+
+
+    try {
+      let moviedata = await axios.get(`${server}/movie?city=${e}`);
+      this.setState({
+        movieArr: moviedata.data,
+        movieshow: true,
+      })
+      console.log(moviedata.data);
+    } catch (error) {
+      this.setState({
+        movierArr: error.message,
+        movieshow: false,
+      })
+    }
+  }
+
+  newSearchQuery = async (e) => {
+     e.preventDefault();
+
+    this.city(e.target.cityname.value);
   }
 
 
-
-  setData = (data1, showing) => {
-    this.setState({
-      data2: data1,
-      display: showing,
-      show: true,
-    })
-  }
-
-  setWeatherArr = (weatherData, showing) => {
-    this.setState({
-      weatherArr: weatherData,
-      rend: showing,
-    })
-  }
   render() {
     return (
       <div>
-        <Informationform setData={this.setData} setWeather={this.setWeatherArr} setmovie={this.setmovie} />
-        {this.state.show &&
-          <Cardofinfo data2={this.state.data2} display={this.state.display} />
+        <h1>CITY EXPLORER</h1>
+        <Form onSubmit={this.newSearchQuery}>
+          <Form.Group controlId="formBasicEmail">
+            <Form.Label>type city name</Form.Label>
+            <Form.Control type="text" placeholder="city name" name="cityname" />
+          </Form.Group>
+
+          <Button variant="primary" type="submit">
+            EXPLORE!
+          </Button>
+        </Form>
+
+        {this.state.mapshow &&
+          <Card style={{ width: '18rem' }}>
+            <Card.Img variant="top" src={`https://maps.locationiq.com/v3/staticmap?key=pk.f5b36af51f5dd4d50454aa00a95c7ec2&center=${this.state.citydata.lat},${this.state.citydata.lon}`} />
+              < Card.Body >
+          <Card.Title>{this.state.citydata.display_name}</Card.Title>
+          <Card.Text>
+            {/* Some quick example text to build on the card title and make up the bulk of
+            the card's content. */}
+          </Card.Text>
+          <ListGroup className="list-group-flush">
+            <ListGroup>{this.state.citydata.lat}</ListGroup>
+            <ListGroup>{this.state.citydata.lon}</ListGroup>
+          </ListGroup>
+        </Card.Body>
+          </Card>
         }
-        {this.state.show === true &&
-          <WeatherCard display={this.state.rend} weatherData={this.state.weatherArr} />}
-        {this.state.show === true &&
-          <Movie display={this.state.rend} setmovie={this.state.newmoive} />}
+
+        {this.state.errmsg && 
+        <div>{this.state.err.response.status}
+        </div>}
+        {this.state.weathershow && <Weather weatherdata={this.state.weatherArr}/>}
+        {this.state.movieshow && <Movies moviedata={this.state.movieArr}/>}
+
+
+
       </div>
-    )
+    );
   }
-}
-export default App;
+  }
+
+  export default App;

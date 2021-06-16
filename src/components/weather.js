@@ -1,46 +1,36 @@
+
 import React from 'react';
-import Card from 'react-bootstrap/Card';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import ListGroup from 'react-bootstrap/ListGroup';
 
 
-class WeatherCard extends React.Component {
+class Weather extends React.Component {
+    // constructor(props) {
+    //     super(props);
+    //     this.state = {
+    //         weatherArr: this.props.weatherdata
+    //     }
+    // }
     render() {
-
-
         return (
             <>
-                {this.props.display && <Card style={{ width: '18rem' }}>
-                    <Card.Body>
-                        <Card.Title>
-                            Weather Data
-                        </Card.Title>
-                        <Card.Text>
-                            {/* {console.log(this.state.weatherData)}  */}
-                            Date: {this.props.weatherData[0].date}<br />
-                            Description: {this.props.weatherData[0].description}<br />
-                            Date: {this.props.weatherData[1].date}<br />
-                            Description: {this.props.weatherData[1].description}<br />
-                            Date: {this.props.weatherData[2].date}<br />
-                            Description: {this.props.weatherData[2].description}<br />
-
-                        </Card.Text>
-                    </Card.Body>
-                </Card>}
-                {this.props.display === false && <Card style={{ width: '18rem' }}>
-                    <Card.Body>
-                        <Card.Title>
-                            Weather Data with error: {this.props.weatherData.status}
-                        </Card.Title>
-                        <Card.Text>
-                            {this.props.weatherData.data}
-
-
-                        </Card.Text>
-                    </Card.Body>
-                </Card>}
-
+                <h1>WEATHER</h1>
+                    <div>
+                        {this.props.weatherdata.map((day, i) => (
+                            <ListGroup>
+                                <ListGroup.Item>day:{i}</ListGroup.Item>
+                                <ListGroup.Item>date:  {day.date}</ListGroup.Item>
+                                <ListGroup.Item>description:{day.description}</ListGroup.Item>
+                            </ListGroup>
+                        ))
+                        }
+                    </div>
+                
+                
+                
             </>
         )
     }
 }
-export default WeatherCard;
+
+export default Weather;
