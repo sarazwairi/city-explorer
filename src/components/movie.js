@@ -1,50 +1,63 @@
+
 import React from 'react';
-import Card from 'react-bootstrap/Card'
+import 'bootstrap/dist/css/bootstrap.min.css';
+import CardDeck from 'react-bootstrap/CardDeck';
+import Container from 'react-bootstrap/Container';
+import Card from 'react-bootstrap/Card';
 
-
-
-class Movie extends React.Component {
-
-
+class Movies extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            movieArr: this.props.moviedata
+        }
+    }
     render() {
-
-
         return (
             <>
-                {(this.props.setmovie.length !== 0 && this.props.display) && <Card style={{ width: '18rem' }}>
-                    <Card.Body>
-                        <Card.Title>
-                            Movies Data
-                        </Card.Title>
-                        <Card.Text>
-                            Date: {this.props.setmovie[0].title}<br />
-                                overview: {this.props.setmovie[0].overview}<br />
-                        avgVotes:{this.props.setmovie[0].avgvotes}<br />
-                        totalVotes:{this.props.setmovie[0].totalVotes}<br />
-                        imagePath:{this.props.setmovie[0].poster_path}<br />
-                        popularity:{this.props.setmovie[0].imageurl}<br />
-                        releaseDate:{this.props.setmovie[0].releasedate}<br />
+                <div>
+                    <h1>MOVIES</h1>
 
-                        </Card.Text>
-                    </Card.Body>
-                </Card>}
+                    <Container>
+                        {this.props.moviedata.map((day, i) => (
+                            <CardDeck>
+                                <Card>
+                                    {this.props.moviedata[i].image &&
+                                        <Card.Img variant="top" src={`https://image.tmdb.org/t/p/w500${this.props.moviedata[i].image}`} alt="" />
+                                    }
+                                    <Card.Body>
+                                        <Card.Title>{this.props.moviedata[i].title}</Card.Title>
+                                        <Card.Text>
+                                            title:{this.props.moviedata[i].title}
+                                        </Card.Text>
+                                        <Card.Text>
+                                            title:{this.props.moviedata[i].overview}
+                                        </Card.Text>
+                                        <Card.Text>
+                                            title:{this.props.moviedata[i].popularity}
+                                        </Card.Text>
+                                        <Card.Text>
+                                            title:{this.props.moviedata[i].date}
+                                        </Card.Text>
+                                        <Card.Text>
+                                            title:{this.props.moviedata[i].avgvotes}
+                                        </Card.Text>
+                                        <Card.Text>
+                                            title:{this.props.moviedata[i].votes}
+                                        </Card.Text>
+                                    </Card.Body>
+                                    <Card.Footer>
+                                    </Card.Footer>
+                                </Card>
+                            </CardDeck>
+                        ))}
 
-                {this.props.display === false && <Card style={{ width: '18rem' }}>
-                    <Card.Body>
-                        <Card.Title>
-                            Movie Data with error: {this.props.setmovie.status}
-                        </Card.Title>
-                        <Card.Text>
-                            {/* {this.props.setmovie.message} */}
 
-
-                        </Card.Text>
-                    </Card.Body>
-                </Card>}
+                    </Container>
+                </div>
 
             </>
         )
     }
 }
-
-export default Movie;
+export default Movies;
